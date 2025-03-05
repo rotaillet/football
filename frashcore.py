@@ -10,18 +10,23 @@ from tqdm import tqdm
 
 # 1) Préparation du driver et de la liste des saisons
 
-def links(driver,year):
+def links(driver):
     all_hrefs = []
 
     # De 2000-2001 jusqu'à 2023-2024
-    for year in range(2000, 2024):
+    for year in range(2024, 2025):
         season_str = f"{year}-{year+1}"
-        url = f"https://www.flashscore.fr/football/france/ligue-1-{season_str}/resultats/"
         print(f"Chargement de la saison : {season_str}")
+        if year == 2024:
+            url = f"https://www.flashscore.fr/football/france/ligue-1/resultats/"
+        else:
+            
+            url = f"https://www.flashscore.fr/football/france/ligue-1-{season_str}/resultats/"
+            
 
         # 2) Charger la page
         driver.get(url)
-        time.sleep(5)  # Laisser le temps à la page de se charger
+        time.sleep(3)  # Laisser le temps à la page de se charger
 
         # 3) Cliquer sur "Montrer plus de matchs" tant que possible
         actions = ActionChains(driver)
@@ -54,7 +59,7 @@ def links(driver,year):
     df = pd.DataFrame(all_hrefs, columns=["saison", "href"])
 
     # 6) Sauvegarder en CSV (sans l’index)
-    df.to_csv("flashscore_ligue1_links.csv", index=False)
+    df.to_csv("flashscore_ligue1_links_2024.csv", index=False)
 
     # Fermer le navigateur
 
@@ -132,12 +137,14 @@ def extract(driver, csv_file):
             print(f"Tableau des statistiques introuvable pour le match : {href}")
 
     # 6) Sauvegarder le DataFrame
-    df.to_csv("test.csv", index=False)
+    df.to_csv("test2.csv", index=False)
     print(f"Mise à jour terminée, le CSV est sauvegardé : {csv_file}")
 
 
 # Exemple d'utilisation
 if __name__ == "__main__":
     driver = webdriver.Chrome()
-    extract(driver, "flashscore_ligue1_links.csv")
+    csv = "flashscore_ligue1_links_2024.csv"
+    links(driver)
+    extract(driver,csv)
     driver.quit()
