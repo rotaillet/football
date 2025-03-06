@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 
-df = pd.read_csv("data.csv")
+df = pd.read_csv("merged_data.csv")
 features = [
     'Possession_de_balle_home', 'Possession_de_balle_away',
     'Tirs_au_but_home', 'Tirs_au_but_away', 'Tirs_cadrés_home',
