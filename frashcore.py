@@ -209,7 +209,29 @@ def pretraitement(df,name):
 
 if __name__ == "__main__":
     
-    df1 = pd.read_csv("merged_data.csv")
-    df2 = pd.read_csv("data_laliga2.csv")
+    df_links = links()
+
+    name = "laliga2"
     
-    df = merge(df1,df2)
+    # Création de la liste des tuples (saison, href) pour le multiprocessing
+    links_list = list(df_links.itertuples(index=False, name=None))
+ 
+    # --- Étape 2 : Extraction des statistiques en parallèle ---
+    nb_process = 10  # Adaptez selon les ressources de votre machine
+    with Pool(processes=nb_process) as pool:
+        results = list(tqdm(pool.imap(process_match, links_list), total=len(links_list), desc="Extraction en parallèle"))
+
+    df_results = pd.DataFrame(results)
+    df_results.to_csv("extraction_parallel.csv", index=False)
+    
+    # --- Étape 3 : Nettoyage ---
+    df_clean = nettoyage(df_results)
+    
+    # --- Étape 4 : Prétraitement ---
+    df_final = pretraitement(df_clean,name)
+    
+    print("Traitement terminé. Les fichiers CSV ont été sauvegardés.")
+
+    global_driver.quit()
+
+    
